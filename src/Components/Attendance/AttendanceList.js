@@ -17,6 +17,9 @@ export default function AttendanceList() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
+    useEffect(() => {
+        selectUserAllData();
+    }, []);
     // Data Table
     useEffect(() => {
         // Ensure DataTable does not initialize multiple times
@@ -184,9 +187,7 @@ export default function AttendanceList() {
 
     // Get all dates for the current month
     const monthDates = getCurrentMonthDates();
-    useEffect(() => {
-        selectUserAllData();
-    }, []);
+
 
     return (
         <div>    <div className="main-wrapper">
