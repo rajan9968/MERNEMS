@@ -1,8 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 
 export default function Navbar() {
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    // Update screen size on resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const toggleSidebar = () => {
+        if (isMobile) {
+            setIsOpen(!isOpen);
+        }
+    };
 
     const handelLogout = (e) => {
         localStorage.removeItem('token');
@@ -26,7 +48,13 @@ export default function Navbar() {
                             <img src="assets/img/logo-white.svg" alt="Logo" />
                         </a>
                     </div>
-                    <a id="mobile_btn" className="mobile_btn" href="#sidebar">
+                    {/* <a id="mobile_btn" className="mobile_btn" href="#sidebar"> */}
+                    <a
+                        id="mobile_btn"
+                        className={`mobile_btn ${isOpen ? 'active' : ''}`}
+                        href="#sidebar"
+                        onClick={toggleSidebar}
+                    >
                         <span className="bar-icon">
                             <span />
                             <span />
@@ -372,7 +400,12 @@ export default function Navbar() {
             </div>
             {/* /Header */}
             {/* Sidebar */}
-            <div className="sidebar" id="sidebar">
+            {/* <div className="sidebar" id="sidebar"> */}
+            <div
+                className="sidebar"
+                id="sidebar"
+                style={{ marginLeft: isMobile ? (isOpen ? '0' : '-575px') : '0' }}
+            >
                 {/* Logo */}
                 <div className="sidebar-logo">
                     <Link as={Link} to={'/'} className="logo logo-normal">

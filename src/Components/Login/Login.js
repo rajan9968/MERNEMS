@@ -141,7 +141,7 @@ export default function Login() {
                                                     </div>
                                                     <div className="d-flex align-items-center justify-content-between mb-3">
                                                         <div className="d-flex align-items-center">
-                                                            <div className="form-check form-check-md mb-0">
+                                                            {/* <div className="form-check form-check-md mb-0">
                                                                 <input
                                                                     className="form-check-input"
                                                                     id="remember_me"
@@ -153,7 +153,7 @@ export default function Login() {
                                                                 >
                                                                     Remember Me
                                                                 </label>
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                         <div className="text-end">
                                                             <a href="forgot-password.html" className="link-danger">
