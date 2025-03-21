@@ -298,7 +298,7 @@ export default function Leaves() {
                                         <div className="d-flex align-items-center justify-content-between">
                                             <div className="text-start">
                                                 <p className="mb-1">Annual Leaves</p>
-                                                <h4>{empleave.annual_leave}</h4>
+                                                {empleave.annual_leave ? <h4>{empleave.annual_leave}</h4> : null}
                                             </div>
                                             <div className="d-flex">
                                                 <div className="flex-shrink-0 me-2">
