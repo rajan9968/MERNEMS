@@ -16,6 +16,7 @@ export default function AttendanceList() {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         selectUserAllData();
