@@ -360,7 +360,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </div>
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col-xl-4 d-flex">
                                 <div className="card flex-fill border-primary attendance-bg">
                                     <div className="card-body">
@@ -619,7 +619,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row">
                             <div className="col-xl-6 d-flex">
                                 <div className="card flex-fill">
