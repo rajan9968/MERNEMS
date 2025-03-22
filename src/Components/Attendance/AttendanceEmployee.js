@@ -114,15 +114,7 @@ export default function AttendanceEmployee() {
             }
         };
     }, []);
-    // useEffect(() => {
-    //     // Ensure DataTable does not initialize multiple times
-    //     setTimeout(() => {
-    //         if ($.fn.DataTable.isDataTable("#myTable")) {
-    //             $("#myTable").DataTable().destroy();
-    //         }
-    //         $("#myTable").DataTable();
-    //     }, 500); // Delays initialization to ensure React renders data
-    // }, []);
+
     useEffect(() => {
         const storedState = localStorage.getItem("attendanceStatus");
         if (storedState) {
