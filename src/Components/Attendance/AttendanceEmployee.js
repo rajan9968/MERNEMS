@@ -4,8 +4,8 @@ import { getUserDetails } from '../Login/authUtils';
 import axios from 'axios';
 import $ from "jquery";
 import moment from "moment";
-import "datatables.net-bs5";
-import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+import "datatables.net";
+import "datatables.net-dt/css/jquery.dataTables.css";
 import "daterangepicker/daterangepicker.css";
 import "daterangepicker";
 import { Link } from 'react-router-dom';
@@ -22,14 +22,18 @@ export default function AttendanceEmployee() {
     const inputRef = useRef(null);
 
     useEffect(() => {
-        // Ensure DataTable does not initialize multiple times
-        setTimeout(() => {
+        const initializeDataTable = () => {
             if ($.fn.DataTable.isDataTable("#myTable")) {
                 $("#myTable").DataTable().destroy();
             }
             $("#myTable").DataTable();
-        }, 500); // Delays initialization to ensure React renders data
-    }, []);
+        };
+
+        // Initialize only after rendering table data
+        if (tableData.length > 0) {
+            setTimeout(initializeDataTable, 0);
+        }
+    }, [tableData]); // Add tableData as a dependency
     useEffect(() => {
         if (inputRef.current) {
             $(inputRef.current).daterangepicker(
