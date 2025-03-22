@@ -23,23 +23,16 @@ export default function AttendanceEmployee() {
     const inputRef = useRef(null);
 
     useEffect(() => {
-        if (tableData.length > 0 && isDataLoaded) {
-            const initializeDataTable = () => {
-                if ($.fn.DataTable.isDataTable("#myTable")) {
-                    $("#myTable").DataTable().destroy();
-                }
-                $("#myTable").DataTable();
-            };
+        const initializeDataTable = () => {
+            if ($.fn.DataTable.isDataTable("#myTable")) {
+                $("#myTable").DataTable().destroy();
+            }
+            $("#myTable").DataTable();
+        };
 
-            // Add slight delay to ensure full rendering before DataTables init
-            setTimeout(initializeDataTable, 0);
-        }
-    }, [isDataLoaded, tableData]);
-
-    // Set the data loaded flag after the table renders
-    useEffect(() => {
         if (tableData.length > 0) {
-            setIsDataLoaded(true);
+            setIsLoading(false);   // Set loading to false once data is loaded
+            setTimeout(initializeDataTable, 0);  // Initialize DataTables after rendering
         }
     }, [tableData]);
     useEffect(() => {
