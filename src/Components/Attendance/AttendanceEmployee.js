@@ -4,14 +4,12 @@ import { getUserDetails } from '../Login/authUtils';
 import axios from 'axios';
 import $ from "jquery";
 import moment from "moment";
-import "datatables.net-bs5";
-import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+import DataTable from "react-data-table-component";
 import "daterangepicker/daterangepicker.css";
 import "daterangepicker";
 import { Link } from 'react-router-dom';
 
 export default function AttendanceEmployee() {
-    const [isLoading, setIsLoading] = useState(true);
     const userDetails = getUserDetails();
     const [btnText, setBtnText] = useState("Punch In");
     const [timeText, setTimeText] = useState("Punch In at --:--");
@@ -21,24 +19,76 @@ export default function AttendanceEmployee() {
     const [dateRange, setDateRange] = useState("");
 
     const inputRef = useRef(null);
-
-    useEffect(() => {
-        const initializeDataTable = () => {
-            if ($.fn.DataTable.isDataTable("#myTable")) {
-                $("#myTable").DataTable().destroy();
-            }
-            $("#myTable").DataTable();
-        };
-
-        if (tableData.length > 0) {
-            setIsLoading(false);
-
-            // Delay DataTables initialization slightly to ensure data rendering is complete
-            setTimeout(() => {
-                initializeDataTable();
-            }, 100);  // Adding delay for stability
+    const columns = [
+        {
+            name: "Date",
+            selector: row => new Date(row.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            }),
+            sortable: true
+        },
+        {
+            name: "Check In",
+            selector: row => row.punchin || "N/A",
+            sortable: true
+        },
+        {
+            name: "Status",
+            cell: row => (
+                <span className="badge badge-success-transparent d-inline-flex align-items-center">
+                    <i className="ti ti-point-filled me-1" />
+                    Present
+                </span>
+            ),
+            sortable: false
+        },
+        {
+            name: "Check Out",
+            selector: row => row.punchout || "N/A",
+            sortable: true
+        },
+        {
+            name: "Late",
+            selector: () => "32 Min",
+            sortable: false
+        },
+        {
+            name: "Overtime",
+            selector: () => "20 Min",
+            sortable: false
+        },
+        {
+            name: "Production Hours",
+            cell: row => (
+                <span className="badge badge-success d-inline-flex align-items-center">
+                    <i className="ti ti-clock-hour-11 me-1" />
+                    {calculateProductionTime(row.punchin, row.punchout)}
+                </span>
+            ),
+            sortable: true
         }
-    }, [tableData]);
+    ];
+
+    const calculateProductionTime = (punchIn, punchOut) => {
+        if (!punchIn || !punchOut) return "N/A";
+
+        let inTime = new Date(`1970-01-01 ${punchIn}`);
+        let outTime = new Date(`1970-01-01 ${punchOut}`);
+
+        // Handle overnight shifts
+        if (outTime < inTime) {
+            outTime.setDate(outTime.getDate() + 1);
+        }
+
+        let diff = outTime - inTime;
+        let hours = Math.floor(diff / 3600000);
+        let minutes = Math.floor((diff % 3600000) / 60000);
+        let seconds = Math.floor((diff % 60000) / 1000);
+
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    };
     useEffect(() => {
         if (inputRef.current) {
             $(inputRef.current).daterangepicker(
@@ -63,7 +113,15 @@ export default function AttendanceEmployee() {
             }
         };
     }, []);
-
+    // useEffect(() => {
+    //     // Ensure DataTable does not initialize multiple times
+    //     setTimeout(() => {
+    //         if ($.fn.DataTable.isDataTable("#myTable")) {
+    //             $("#myTable").DataTable().destroy();
+    //         }
+    //         $("#myTable").DataTable();
+    //     }, 500); // Delays initialization to ensure React renders data
+    // }, []);
     useEffect(() => {
         const storedState = localStorage.getItem("attendanceStatus");
         if (storedState) {
@@ -231,9 +289,6 @@ export default function AttendanceEmployee() {
 
             if (response.data.success) {
                 setTableData(response.data.data);
-                setTimeout(() => {
-                    initializeDataTable();
-                }, 100);
 
             } else {
                 console.log("Something went wrong");
@@ -254,6 +309,12 @@ export default function AttendanceEmployee() {
     useEffect(() => {
         selectUsertData();
     }, []);
+
+
+
+
+
+
 
 
 
@@ -692,54 +753,15 @@ export default function AttendanceEmployee() {
                         </div>
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
-                                {isLoading ? (
-                                    <p>Loading...</p>
-                                ) : (
-                                    <table className="table datatable" id="myTable">
-                                        <thead className="thead-light">
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Check In</th>
-                                                <th>Status</th>
-                                                <th>Check Out</th>
-                                                <th>Late</th>
-                                                <th>Overtime</th>
-                                                <th>Production Hours</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {tableData.map((item, index) => {
-                                                const formattedDate = new Date(item.date).toLocaleDateString("en-GB", {
-                                                    day: "2-digit",
-                                                    month: "short",
-                                                    year: "numeric",
-                                                });
-
-                                                return (
-                                                    <tr key={index}>
-                                                        <td>{formattedDate}</td>
-                                                        <td>{item.punchin || "N/A"}</td>
-                                                        <td>
-                                                            <span className="badge badge-success-transparent d-inline-flex align-items-center">
-                                                                <i className="ti ti-point-filled me-1" />
-                                                                Present
-                                                            </span>
-                                                        </td>
-                                                        <td>{item.punchout || "N/A"}</td>
-                                                        <td>32 Min</td>
-                                                        <td>20 Min</td>
-                                                        <td>
-                                                            <span className="badge badge-success d-inline-flex align-items-center">
-                                                                <i className="ti ti-clock-hour-11 me-1" />
-                                                                {calculateProductionTime(item.punchin, item.punchout)}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                )}
+                                <DataTable
+                                    title="Attendance Report"
+                                    columns={columns}
+                                    data={tableData}
+                                    pagination
+                                    striped
+                                    highlightOnHover
+                                    responsive
+                                />
                             </div>
                         </div>
                     </div>
