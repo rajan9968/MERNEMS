@@ -11,6 +11,7 @@ import "daterangepicker";
 import { Link } from 'react-router-dom';
 
 export default function AttendanceEmployee() {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const userDetails = getUserDetails();
     const [btnText, setBtnText] = useState("Punch In");
     const [timeText, setTimeText] = useState("Punch In at --:--");
@@ -22,14 +23,25 @@ export default function AttendanceEmployee() {
     const inputRef = useRef(null);
 
     useEffect(() => {
-        // Ensure DataTable does not initialize multiple times
-        setTimeout(() => {
-            if ($.fn.DataTable.isDataTable("#myTable")) {
-                $("#myTable").DataTable().destroy();
-            }
-            $("#myTable").DataTable();
-        }, 500); // Delays initialization to ensure React renders data
-    }, []);
+        if (tableData.length > 0 && isDataLoaded) {
+            const initializeDataTable = () => {
+                if ($.fn.DataTable.isDataTable("#myTable")) {
+                    $("#myTable").DataTable().destroy();
+                }
+                $("#myTable").DataTable();
+            };
+
+            // Add slight delay to ensure full rendering before DataTables init
+            setTimeout(initializeDataTable, 0);
+        }
+    }, [isDataLoaded, tableData]);
+
+    // Set the data loaded flag after the table renders
+    useEffect(() => {
+        if (tableData.length > 0) {
+            setIsDataLoaded(true);
+        }
+    }, [tableData]);
     useEffect(() => {
         if (inputRef.current) {
             $(inputRef.current).daterangepicker(
@@ -686,76 +698,54 @@ export default function AttendanceEmployee() {
                         </div>
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
-                                <table className="table datatable" id="myTable">
-                                    <thead className="thead-light">
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Check In</th>
-                                            <th>Status</th>
-                                            <th>Check Out</th>
-                                            <th>Late</th>
-                                            <th>Overtime</th>
-                                            <th>Production Hours</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tableData.map((item, index) => {
-                                            const formattedDate = new Date(item.date).toLocaleDateString("en-GB", {
-                                                day: "2-digit",
-                                                month: "short",
-                                                year: "numeric",
-                                            });
+                                {isLoading ? (
+                                    <p>Loading...</p>
+                                ) : (
+                                    <table className="table datatable" id="myTable">
+                                        <thead className="thead-light">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Check In</th>
+                                                <th>Status</th>
+                                                <th>Check Out</th>
+                                                <th>Late</th>
+                                                <th>Overtime</th>
+                                                <th>Production Hours</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tableData.map((item, index) => {
+                                                const formattedDate = new Date(item.date).toLocaleDateString("en-GB", {
+                                                    day: "2-digit",
+                                                    month: "short",
+                                                    year: "numeric",
+                                                });
 
-
-                                            function calculateProductionTime(punchIn, punchOut) {
-                                                if (!punchIn || !punchOut) return "N/A";
-
-                                                // Convert time to Date objects
-                                                let inTime = new Date(`1970-01-01 ${punchIn}`);
-                                                let outTime = new Date(`1970-01-01 ${punchOut}`);
-
-                                                // Handle overnight shifts (if punchOut is past midnight)
-                                                if (outTime < inTime) {
-                                                    outTime.setDate(outTime.getDate() + 1);
-                                                }
-
-                                                // Calculate difference in milliseconds
-                                                let diff = outTime - inTime;
-
-                                                // Convert milliseconds to hours, minutes, and seconds
-                                                let hours = Math.floor(diff / 3600000);
-                                                let minutes = Math.floor((diff % 3600000) / 60000);
-                                                let seconds = Math.floor((diff % 60000) / 1000);
-
-                                                return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-                                            }
-                                            return (
-                                                <tr key={index}>
-                                                    <td>{formattedDate}</td>
-                                                    <td>{item.punchin || "N/A"}</td>
-                                                    <td>
-                                                        <span className="badge badge-success-transparent d-inline-flex align-items-center">
-                                                            <i className="ti ti-point-filled me-1" />
-                                                            Present
-                                                        </span>
-                                                    </td>
-                                                    <td>{item.punchout || "N/A"}</td>
-                                                    <td>32 Min</td>
-                                                    <td>20 Min</td>
-                                                    <td>
-                                                        <span className="badge badge-success d-inline-flex align-items-center">
-                                                            <i className="ti ti-clock-hour-11 me-1" />
-                                                            {calculateProductionTime(item.punchin, item.punchout)}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-
-
-
-                                    </tbody>
-                                </table>
+                                                return (
+                                                    <tr key={index}>
+                                                        <td>{formattedDate}</td>
+                                                        <td>{item.punchin || "N/A"}</td>
+                                                        <td>
+                                                            <span className="badge badge-success-transparent d-inline-flex align-items-center">
+                                                                <i className="ti ti-point-filled me-1" />
+                                                                Present
+                                                            </span>
+                                                        </td>
+                                                        <td>{item.punchout || "N/A"}</td>
+                                                        <td>32 Min</td>
+                                                        <td>20 Min</td>
+                                                        <td>
+                                                            <span className="badge badge-success d-inline-flex align-items-center">
+                                                                <i className="ti ti-clock-hour-11 me-1" />
+                                                                {calculateProductionTime(item.punchin, item.punchout)}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
                         </div>
                     </div>
