@@ -231,6 +231,9 @@ export default function AttendanceEmployee() {
 
             if (response.data.success) {
                 setTableData(response.data.data);
+                setTimeout(() => {
+                    initializeDataTable();
+                }, 100);
 
             } else {
                 console.log("Something went wrong");
@@ -251,12 +254,6 @@ export default function AttendanceEmployee() {
     useEffect(() => {
         selectUsertData();
     }, []);
-
-
-
-
-
-
 
 
 
