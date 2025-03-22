@@ -296,7 +296,7 @@ export default function AttendanceEmployee() {
                     console.log("Something went wrong");
                 }
                 setIsLoading(false);  // Stop loading after delay
-            }, 1500);
+            }, 500);
 
         } catch (error) {
             console.error("Error in selectUsertData:", error);
@@ -758,8 +758,10 @@ export default function AttendanceEmployee() {
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
                                 {isLoading ? (
-                                    <div className="loader-container">
-                                        <p>Loading data...</p>
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
                                     </div>
                                 ) : (
                                     <DataTable
