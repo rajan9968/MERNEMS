@@ -17,6 +17,7 @@ export default function AttendanceEmployee() {
     const [tableData, setTableData] = useState([]);
     const [productionTime, setProTime] = useState([]);
     const [dateRange, setDateRange] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     const inputRef = useRef(null);
     const columns = [
@@ -277,6 +278,7 @@ export default function AttendanceEmployee() {
     // Select AttendanceEmployee
     const selectUserAllData = async () => {
         try {
+            setIsLoading(true);
             const userId = userDetails.userId;
             const response = await axios.get(process.env.REACT_APP_API_URL + '/attend/selectuseralldata',
                 {
@@ -287,12 +289,14 @@ export default function AttendanceEmployee() {
                     },
                 });
 
-            if (response.data.success) {
-                setTableData(response.data.data);
-
-            } else {
-                console.log("Something went wrong");
-            }
+            setTimeout(() => {
+                if (response.data.success) {
+                    setTableData(response.data.data);
+                } else {
+                    console.log("Something went wrong");
+                }
+                setIsLoading(false);  // Stop loading after delay
+            }, 1500);
 
         } catch (error) {
             console.error("Error in selectUsertData:", error);
@@ -753,15 +757,21 @@ export default function AttendanceEmployee() {
                         </div>
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
-                                <DataTable
-                                    title="Attendance Report"
-                                    columns={columns}
-                                    data={tableData}
-                                    pagination
-                                    striped
-                                    highlightOnHover
-                                    responsive
-                                />
+                                {isLoading ? (
+                                    <div className="loader-container">
+                                        <p>Loading data...</p>
+                                    </div>
+                                ) : (
+                                    <DataTable
+                                        title="Attendance Report"
+                                        columns={columns}
+                                        data={tableData}
+                                        pagination
+                                        striped
+                                        highlightOnHover
+                                        responsive
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
