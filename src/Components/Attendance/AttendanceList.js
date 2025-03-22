@@ -3,7 +3,6 @@ import Navbar from '../ClientSide/Navbar'
 import { getUserDetails } from '../Login/authUtils';
 import axios from 'axios';
 import $ from "jquery";
-import DataTable from "react-data-table-component";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import { Table } from 'react-bootstrap';
@@ -17,84 +16,21 @@ export default function AttendanceList() {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         selectUserAllData();
     }, []);
     // Data Table
-    const columns = [
-        {
-            name: "Date",
-            selector: (row) => new Date(row.date).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-            }),
-            sortable: true,
-        },
-        {
-            name: "Check In",
-            selector: (row) => row.punchin,
-            sortable: true,
-        },
-        {
-            name: "Status",
-            cell: (row) => (
-                <span
-                    className={`px-2 py-1 rounded text-sm ${row.status === "Present"
-                        ? "bg-green-100 text-green-800"
-                        : row.status === "On Leave"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                >
-                    {row.status === "On Leave" ? row.leaveType.replace("_", " ") : row.status}
-                </span>
-            ),
-            sortable: true,
-        },
-        {
-            name: "Check Out",
-            selector: (row) => row.punchout,
-            sortable: true,
-        },
-        {
-            name: "Late",
-            selector: (row) => (row.status === "Present" ? "32 Min" : "N/A"),
-            sortable: true,
-        },
-        {
-            name: "Overtime",
-            selector: (row) => (row.status === "Present" ? "20 Min" : "N/A"),
-            sortable: true,
-        },
-        {
-            name: "Production Hours",
-            cell: (row) => (
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                    {row.status === "Present"
-                        ? calculateProductionTime(row.punchin, row.punchout)
-                        : "N/A"}
-                </span>
-            ),
-            sortable: true,
-        },
-    ];
+    useEffect(() => {
+        // Ensure DataTable does not initialize multiple times
+        setTimeout(() => {
+            if ($.fn.DataTable.isDataTable("#attendanceTable")) {
+                $("#attendanceTable").DataTable().destroy();
+            }
+            $("#attendanceTable").DataTable();
+        }, 500); // Delays initialization to ensure React renders data
+    }, []);
 
-    const customStyles = {
-        headCells: {
-            style: {
-                backgroundColor: "#f1f5f9",
-                fontWeight: "bold",
-            },
-        },
-        cells: {
-            style: {
-                fontSize: "14px",
-            },
-        },
-    };
     // Handle Month Change
     const handleMonthChange = async (e) => {
         try {
@@ -130,9 +66,11 @@ export default function AttendanceList() {
 
 
     };
+
+
+
     // Select AttendanceEmployee Data
     const selectUserAllData = async () => {
-        setIsLoading(true);  // Start loading
         try {
             const response = await axios.get(process.env.REACT_APP_API_URL + '/attend/selectuseralldata', {
                 headers: {
@@ -201,10 +139,10 @@ export default function AttendanceList() {
 
         } catch (error) {
             console.error("Error in selectUserAllData:", error);
-        } finally {
-            setIsLoading(false);  // Stop loading
         }
     };
+
+
 
     // Select data by date range 
     const handleDataByRange = async () => {
@@ -321,24 +259,72 @@ export default function AttendanceList() {
                             </div>
                         </div>
                         <div className="card-body p-0">
-                            <div className="p-4">
-                                {isLoading ? (
-                                    <div class="d-flex justify-content-center my-5">
-                                        <div class="spinner-border" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <DataTable
-                                        title="Attendance Table"
-                                        columns={columns}
-                                        data={tableData}
-                                        pagination
-                                        highlightOnHover
-                                        striped
-                                        customStyles={customStyles}
-                                    />
-                                )}
+                            <div className="custom-datatable-filter table-responsive">
+                                <table className="table datatable">
+                                    <thead className="thead-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Check In</th>
+                                            <th>Status</th>
+                                            <th>Check Out</th>
+                                            <th>Late</th>
+                                            <th>Overtime</th>
+                                            <th>Production Hours</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {tableData.length > 0 ? (
+                                            tableData.map((item, index) => {
+                                                // Format date properly (07 Mar 2025)
+                                                const formattedDate = new Date(item.date).toLocaleDateString("en-GB", {
+                                                    day: "2-digit",
+                                                    month: "short",
+                                                    year: "numeric",
+                                                });
+
+                                                return (
+                                                    <tr key={index}>
+                                                        <td><strong>{formattedDate}</strong></td>
+                                                        <td>{item.punchin}</td>
+                                                        <td>
+                                                            {item.status === "Present" ? (
+                                                                <span className="badge badge-success d-inline-flex align-items-center">
+                                                                    <i className="ti ti-point-filled me-1" />
+                                                                    Present
+                                                                </span>
+                                                            ) : item.status === "On Leave" ? (
+                                                                <span className="badge badge-warning d-inline-flex align-items-center">
+                                                                    <i className="ti ti-point-filled me-1" />
+                                                                    {item.leaveType.replace("_", " ")} {/* Convert snake_case to readable */}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="badge badge-danger d-inline-flex align-items-center">
+                                                                    <i className="ti ti-point-filled me-1" />
+                                                                    Absent
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                        <td>{item.punchout}</td>
+                                                        <td>{item.status === "Present" ? "32 Min" : "N/A"}</td>
+                                                        <td>{item.status === "Present" ? "20 Min" : "N/A"}</td>
+                                                        <td>
+                                                            <span className="badge badge-success d-inline-flex align-items-center">
+                                                                <i className="ti ti-clock-hour-11 me-1" />
+                                                                {item.status === "Present" ? calculateProductionTime(item.punchin, item.punchout) : "N/A"}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="7" className="text-center">No data available</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+
+
                             </div>
                         </div>
                     </div>
