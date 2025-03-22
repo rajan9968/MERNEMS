@@ -265,7 +265,11 @@ export default function AttendanceList() {
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
                                 {isLoading ? (
-                                    <div className="text-center py-4">Loading...</div>
+                                    <div class="d-flex justify-content-center py-5">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <table className="table datatable">
                                         <thead className="thead-light">
