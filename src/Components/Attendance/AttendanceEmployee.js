@@ -11,7 +11,7 @@ import "daterangepicker";
 import { Link } from 'react-router-dom';
 
 export default function AttendanceEmployee() {
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const userDetails = getUserDetails();
     const [btnText, setBtnText] = useState("Punch In");
     const [timeText, setTimeText] = useState("Punch In at --:--");
