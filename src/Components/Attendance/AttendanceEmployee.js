@@ -758,7 +758,7 @@ export default function AttendanceEmployee() {
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
                                 {isLoading ? (
-                                    <div class="d-flex justify-content-center">
+                                    <div class="d-flex justify-content-center my-5">
                                         <div class="spinner-border" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
