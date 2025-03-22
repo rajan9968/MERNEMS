@@ -71,6 +71,7 @@ export default function AttendanceList() {
 
     // Select AttendanceEmployee Data
     const selectUserAllData = async () => {
+        setIsLoading(true);  // Start loading
         try {
             const response = await axios.get(process.env.REACT_APP_API_URL + '/attend/selectuseralldata', {
                 headers: {
@@ -139,6 +140,8 @@ export default function AttendanceList() {
 
         } catch (error) {
             console.error("Error in selectUserAllData:", error);
+        } finally {
+            setIsLoading(false);  // Stop loading
         }
     };
 
@@ -260,71 +263,74 @@ export default function AttendanceList() {
                         </div>
                         <div className="card-body p-0">
                             <div className="custom-datatable-filter table-responsive">
-                                <table className="table datatable">
-                                    <thead className="thead-light">
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Check In</th>
-                                            <th>Status</th>
-                                            <th>Check Out</th>
-                                            <th>Late</th>
-                                            <th>Overtime</th>
-                                            <th>Production Hours</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tableData.length > 0 ? (
-                                            tableData.map((item, index) => {
-                                                // Format date properly (07 Mar 2025)
-                                                const formattedDate = new Date(item.date).toLocaleDateString("en-GB", {
-                                                    day: "2-digit",
-                                                    month: "short",
-                                                    year: "numeric",
-                                                });
-
-                                                return (
-                                                    <tr key={index}>
-                                                        <td><strong>{formattedDate}</strong></td>
-                                                        <td>{item.punchin}</td>
-                                                        <td>
-                                                            {item.status === "Present" ? (
-                                                                <span className="badge badge-success d-inline-flex align-items-center">
-                                                                    <i className="ti ti-point-filled me-1" />
-                                                                    Present
-                                                                </span>
-                                                            ) : item.status === "On Leave" ? (
-                                                                <span className="badge badge-warning d-inline-flex align-items-center">
-                                                                    <i className="ti ti-point-filled me-1" />
-                                                                    {item.leaveType.replace("_", " ")} {/* Convert snake_case to readable */}
-                                                                </span>
-                                                            ) : (
-                                                                <span className="badge badge-danger d-inline-flex align-items-center">
-                                                                    <i className="ti ti-point-filled me-1" />
-                                                                    Absent
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                        <td>{item.punchout}</td>
-                                                        <td>{item.status === "Present" ? "32 Min" : "N/A"}</td>
-                                                        <td>{item.status === "Present" ? "20 Min" : "N/A"}</td>
-                                                        <td>
-                                                            <span className="badge badge-success d-inline-flex align-items-center">
-                                                                <i className="ti ti-clock-hour-11 me-1" />
-                                                                {item.status === "Present" ? calculateProductionTime(item.punchin, item.punchout) : "N/A"}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                        ) : (
+                                {isLoading ? (
+                                    <div className="text-center py-4">Loading...</div>
+                                ) : (
+                                    <table className="table datatable">
+                                        <thead className="thead-light">
                                             <tr>
-                                                <td colSpan="7" className="text-center">No data available</td>
+                                                <th>Date</th>
+                                                <th>Check In</th>
+                                                <th>Status</th>
+                                                <th>Check Out</th>
+                                                <th>Late</th>
+                                                <th>Overtime</th>
+                                                <th>Production Hours</th>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {tableData.length > 0 ? (
+                                                tableData.map((item, index) => {
+                                                    // Format date properly (07 Mar 2025)
+                                                    const formattedDate = new Date(item.date).toLocaleDateString("en-GB", {
+                                                        day: "2-digit",
+                                                        month: "short",
+                                                        year: "numeric",
+                                                    });
 
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td><strong>{formattedDate}</strong></td>
+                                                            <td>{item.punchin}</td>
+                                                            <td>
+                                                                {item.status === "Present" ? (
+                                                                    <span className="badge badge-success d-inline-flex align-items-center">
+                                                                        <i className="ti ti-point-filled me-1" />
+                                                                        Present
+                                                                    </span>
+                                                                ) : item.status === "On Leave" ? (
+                                                                    <span className="badge badge-warning d-inline-flex align-items-center">
+                                                                        <i className="ti ti-point-filled me-1" />
+                                                                        {item.leaveType.replace("_", " ")} {/* Convert snake_case to readable */}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="badge badge-danger d-inline-flex align-items-center">
+                                                                        <i className="ti ti-point-filled me-1" />
+                                                                        Absent
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td>{item.punchout}</td>
+                                                            <td>{item.status === "Present" ? "32 Min" : "N/A"}</td>
+                                                            <td>{item.status === "Present" ? "20 Min" : "N/A"}</td>
+                                                            <td>
+                                                                <span className="badge badge-success d-inline-flex align-items-center">
+                                                                    <i className="ti ti-clock-hour-11 me-1" />
+                                                                    {item.status === "Present" ? calculateProductionTime(item.punchin, item.punchout) : "N/A"}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="7" className="text-center">No data available</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
 
+                                )}
                             </div>
                         </div>
                     </div>
