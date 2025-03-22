@@ -31,8 +31,12 @@ export default function AttendanceEmployee() {
         };
 
         if (tableData.length > 0) {
-            setIsLoading(false);   // Set loading to false once data is loaded
-            setTimeout(initializeDataTable, 0);  // Initialize DataTables after rendering
+            setIsLoading(false);
+
+            // Delay DataTables initialization slightly to ensure data rendering is complete
+            setTimeout(() => {
+                initializeDataTable();
+            }, 100);  // Adding delay for stability
         }
     }, [tableData]);
     useEffect(() => {
