@@ -562,7 +562,7 @@ export default function Navbar() {
                                     </li>
                                     <li>
                                         <Link as={Link} to="/task-board">
-                                            <i class="ti ti-calendar-event"></i><span>Task Borad</span>
+                                            <i class="ti ti-box"></i><span>Task Borad</span>
                                         </Link>
                                     </li>
                                     <li>
