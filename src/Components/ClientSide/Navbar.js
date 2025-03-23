@@ -561,6 +561,11 @@ export default function Navbar() {
                                         </Link>
                                     </li>
                                     <li>
+                                        <Link as={Link} to="/task-board">
+                                            <i class="ti ti-calendar-event"></i><span>Leaves</span>
+                                        </Link>
+                                    </li>
+                                    <li>
                                         <a onClick={handelLogout}>
                                             <i class="ti ti-power"></i><span>Logout</span>
                                         </a>

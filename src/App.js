@@ -4,9 +4,11 @@ import AttendanceList from './Components/Attendance/AttendanceList';
 import Dashboard from './Components/ClientSide/Dashboard';
 import Login from './Components/Login/Login';
 import Leaves from './Components/Leaves/Leaves';
+import TaskBoard from './Components/Task/TaskBoard';
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import RefreshHandle from './RefreshHandle';
+
 
 
 const PrivateRoute = ({ children, isAuthenticated }) => {
@@ -30,6 +32,7 @@ function App() {
                 <Route path="/attendance" element={<AttendanceEmployee />} />
                 <Route path="/attendance-list" element={<AttendanceList />} />
                 <Route path="/leaves" element={<Leaves />} />
+                <Route path="/task-board" element={<TaskBoard />} />
               </Routes>
             </PrivateRoute>
           }
