@@ -1,7 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../ClientSide/Navbar'
+import { selectTask } from './TaskService'
 
 export default function TaskBoard() {
+    const [tasks, setTasks] = useState([]);
+
+    const selectAssignedWork = async () => {
+        try {
+
+            const response = await selectTask();
+            selectTask(response);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        selectAssignedWork();
+    }, [])
+
     return (
         <div>
             <div className="main-wrapper">
@@ -310,204 +328,128 @@ export default function TaskBoard() {
                                         role="tabpanel"
                                     >
                                         <div className='row'>
-                                            <div className="col-lg-4 d-flex align-items-start overflow-auto project-status pb-4">
-                                                <div className="p-3 rounded bg-transparent-secondary w-100 me-3">
-                                                    <div className="bg-white p-2 rounded mb-2">
-                                                        <div className="d-flex align-items-center justify-content-between">
-                                                            <div className="d-flex align-items-center">
-                                                                <span className="bg-transparent-purple p-1 d-flex rounded-circle me-2">
-                                                                    <span className="bg-purple rounded-circle d-block p-1" />
-                                                                </span>
-                                                                <h5 className="me-2">To Do</h5>
-                                                                <span className="badge bg-light rounded-pill">02</span>
-                                                            </div>
-                                                            <div className="dropdown">
-                                                                <a
-                                                                    href="javascript:void(0);"
-                                                                    className="d-inline-flex align-items-center"
-                                                                    data-bs-toggle="dropdown"
-                                                                >
-                                                                    <i className="ti ti-dots-vertical" />
-                                                                </a>
-                                                                <ul className="dropdown-menu dropdown-menu-end p-3">
-                                                                    <li>
-                                                                        <a
-                                                                            href="javascript:void(0);"
-                                                                            className="dropdown-item rounded-1"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#edit_task"
-                                                                        >
-                                                                            <i className="ti ti-edit me-2" />
-                                                                            Edit
-                                                                        </a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a
-                                                                            href="javascript:void(0);"
-                                                                            className="dropdown-item rounded-1"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#delete_modal"
-                                                                        >
-                                                                            <i className="ti ti-trash me-2" />
-                                                                            Delete
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="kanban-drag-wrap">
-                                                        <div>
-                                                            <div className="card kanban-card mb-2">
-                                                                <div className="card-body">
-                                                                    <div className="d-flex align-items-center justify-content-between mb-3">
-                                                                        <div className="d-flex align-items-center">
-                                                                            <span className="badge bg-outline-dark me-2">
-                                                                                Web Layout
-                                                                            </span>
-                                                                            <span className="badge bg-danger badge-xs d-flex align-items-center justify-content-center">
-                                                                                <i className="fas fa-circle fs-6 me-1" />
-                                                                                High
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="dropdown">
-                                                                            <a
-                                                                                href="javascript:void(0);"
-                                                                                className="d-inline-flex align-items-center"
-                                                                                data-bs-toggle="dropdown"
-                                                                            >
-                                                                                <i className="ti ti-dots-vertical" />
-                                                                            </a>
-                                                                            <ul className="dropdown-menu dropdown-menu-end p-3">
-                                                                                <li>
-                                                                                    <a
-                                                                                        href="javascript:void(0);"
-                                                                                        className="dropdown-item rounded-1"
-                                                                                        data-bs-toggle="modal"
-                                                                                        data-bs-target="#edit_task"
-                                                                                    >
-                                                                                        <i className="ti ti-edit me-2" />
-                                                                                        Edit
-                                                                                    </a>
-                                                                                </li>
-                                                                                <li>
-                                                                                    <a
-                                                                                        href="javascript:void(0);"
-                                                                                        className="dropdown-item rounded-1"
-                                                                                        data-bs-toggle="modal"
-                                                                                        data-bs-target="#delete_modal"
-                                                                                    >
-                                                                                        <i className="ti ti-trash me-2" />
-                                                                                        Delete
-                                                                                    </a>
-                                                                                </li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="mb-2">
-                                                                        <h6 className="d-flex align-items-center">
-                                                                            Payment Gateway
-                                                                        </h6>
-                                                                    </div>
-                                                                    <div className="d-flex align-items-center mb-2">
-                                                                        <div
-                                                                            className="progress progress-sm flex-fill"
-                                                                            role="progressbar"
-                                                                            aria-label="Basic example"
-                                                                            aria-valuenow={0}
-                                                                            aria-valuemin={0}
-                                                                            aria-valuemax={100}
-                                                                        >
-                                                                            <div
-                                                                                className="progress-bar bg-warning"
-                                                                                style={{ width: "40%" }}
-                                                                            />
-                                                                        </div>
-                                                                        <span className="d-block ms-2 text-gray-9 fw-medium">
-                                                                            40%
+                                            {tasks.length > 0 ? (
+                                                tasks.map((task, index) => (
+                                                    <div key={index} className="col-lg-4 d-flex align-items-start overflow-auto project-status pb-4">
+                                                        <div className="p-3 rounded bg-transparent-secondary w-100 me-3">
+                                                            <div className="bg-white p-2 rounded mb-2">
+                                                                <div className="d-flex align-items-center justify-content-between">
+                                                                    <div className="d-flex align-items-center">
+                                                                        <span className="bg-transparent-purple p-1 d-flex rounded-circle me-2">
+                                                                            <span className="bg-purple rounded-circle d-block p-1" />
                                                                         </span>
+                                                                        <h5 className="me-2">{task.status || "To Do"}</h5>
+                                                                        <span className="badge bg-light rounded-pill">02</span>
                                                                     </div>
-                                                                    <p className="fw-medium mb-0">
-                                                                        Due on :{" "}
-                                                                        <span className="text-gray-9"> 18 Apr 2024</span>
-                                                                    </p>
-                                                                    <div className="d-flex align-items-center justify-content-between border-top pt-2 mt-2">
-                                                                        <div className="avatar-list-stacked avatar-group-sm me-3">
-                                                                            <span className="avatar avatar-rounded">
-                                                                                <img
-                                                                                    className="border border-white"
-                                                                                    src="assets/img/profiles/avatar-19.jpg"
-                                                                                    alt="img"
-                                                                                />
-                                                                            </span>
-                                                                            <span className="avatar avatar-rounded">
-                                                                                <img
-                                                                                    className="border border-white"
-                                                                                    src="assets/img/profiles/avatar-29.jpg"
-                                                                                    alt="img"
-                                                                                />
-                                                                            </span>
-                                                                            <span className="avatar avatar-rounded">
-                                                                                <img
-                                                                                    className="border border-white"
-                                                                                    src="assets/img/profiles/avatar-16.jpg"
-                                                                                    alt="img"
-                                                                                />
-                                                                            </span>
-                                                                            <span className="avatar avatar-rounded">
-                                                                                <img
-                                                                                    className="border border-white"
-                                                                                    src="assets/img/profiles/avatar-01.jpg"
-                                                                                    alt="img"
-                                                                                />
-                                                                            </span>
-                                                                            <span className="avatar avatar-rounded">
-                                                                                <img
-                                                                                    className="border border-white"
-                                                                                    src="assets/img/profiles/avatar-02.jpg"
-                                                                                    alt="img"
-                                                                                />
-                                                                            </span>
-                                                                            <span className="avatar avatar-rounded bg-primary fs-12">
-                                                                                1+
-                                                                            </span>
+                                                                    <div className="dropdown">
+                                                                        <a href="javascript:void(0);" className="d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                                                            <i className="ti ti-dots-vertical" />
+                                                                        </a>
+                                                                        <ul className="dropdown-menu dropdown-menu-end p-3">
+                                                                            <li>
+                                                                                <a href="javascript:void(0);" className="dropdown-item rounded-1" data-bs-toggle="modal" data-bs-target="#edit_task">
+                                                                                    <i className="ti ti-edit me-2" />
+                                                                                    Edit
+                                                                                </a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <a href="javascript:void(0);" className="dropdown-item rounded-1" data-bs-toggle="modal" data-bs-target="#delete_modal">
+                                                                                    <i className="ti ti-trash me-2" />
+                                                                                    Delete
+                                                                                </a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="kanban-drag-wrap">
+                                                                <div className="card kanban-card mb-2">
+                                                                    <div className="card-body">
+                                                                        <div className="d-flex align-items-center justify-content-between mb-3">
+                                                                            <div className="d-flex align-items-center">
+                                                                                <span className="badge bg-outline-dark me-2">Web Layout</span>
+                                                                                <span className="badge bg-danger badge-xs d-flex align-items-center justify-content-center">
+                                                                                    <i className="fas fa-circle fs-6 me-1" /> High
+                                                                                </span>
+                                                                            </div>
+                                                                            <div className="dropdown">
+                                                                                <a href="javascript:void(0);" className="d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                                                                    <i className="ti ti-dots-vertical" />
+                                                                                </a>
+                                                                                <ul className="dropdown-menu dropdown-menu-end p-3">
+                                                                                    <li>
+                                                                                        <a href="javascript:void(0);" className="dropdown-item rounded-1" data-bs-toggle="modal" data-bs-target="#edit_task">
+                                                                                            <i className="ti ti-edit me-2" />
+                                                                                            Edit
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <a href="javascript:void(0);" className="dropdown-item rounded-1" data-bs-toggle="modal" data-bs-target="#delete_modal">
+                                                                                            <i className="ti ti-trash me-2" />
+                                                                                            Delete
+                                                                                        </a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="d-flex align-items-center">
-                                                                            <a
-                                                                                href="javascript:void(0);"
-                                                                                className="d-flex align-items-center text-dark me-2"
-                                                                            >
-                                                                                <i className="ti ti-message-circle text-gray me-1" />
-                                                                                14
-                                                                            </a>
-                                                                            <a
-                                                                                href="javascript:void(0);"
-                                                                                className="d-flex align-items-center text-dark"
-                                                                            >
-                                                                                <i className="ti ti-paperclip text-gray me-1" />
-                                                                                14
-                                                                            </a>
+
+                                                                        <div className="mb-2">
+                                                                            <h6 className="d-flex align-items-center">{task.title || "Payment Gateway"}</h6>
+                                                                        </div>
+
+                                                                        <div className="d-flex align-items-center mb-2">
+                                                                            <div className="progress progress-sm flex-fill" role="progressbar" aria-label="Basic example" aria-valuenow={40} aria-valuemin={0} aria-valuemax={100}>
+                                                                                <div className="progress-bar bg-warning" style={{ width: "40%" }} />
+                                                                            </div>
+                                                                            <span className="d-block ms-2 text-gray-9 fw-medium">40%</span>
+                                                                        </div>
+
+                                                                        <p className="fw-medium mb-0">
+                                                                            Due on: <span className="text-gray-9">18 Apr 2024</span>
+                                                                        </p>
+
+                                                                        <div className="d-flex align-items-center justify-content-between border-top pt-2 mt-2">
+                                                                            <div className="avatar-list-stacked avatar-group-sm me-3">
+                                                                                <span className="avatar avatar-rounded">
+                                                                                    <img className="border border-white" src="assets/img/profiles/avatar-19.jpg" alt="img" />
+                                                                                </span>
+                                                                                <span className="avatar avatar-rounded">
+                                                                                    <img className="border border-white" src="assets/img/profiles/avatar-29.jpg" alt="img" />
+                                                                                </span>
+                                                                                <span className="avatar avatar-rounded">
+                                                                                    <img className="border border-white" src="assets/img/profiles/avatar-16.jpg" alt="img" />
+                                                                                </span>
+                                                                            </div>
+
+                                                                            <div className="d-flex align-items-center">
+                                                                                <a href="javascript:void(0);" className="d-flex align-items-center text-dark me-2">
+                                                                                    <i className="ti ti-message-circle text-gray me-1" />
+                                                                                    14
+                                                                                </a>
+                                                                                <a href="javascript:void(0);" className="d-flex align-items-center text-dark">
+                                                                                    <i className="ti ti-paperclip text-gray me-1" />
+                                                                                    14
+                                                                                </a>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+
+                                                            <div className="pt-2">
+                                                                <a href="#" className="btn btn-white border border-dashed d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#add_task">
+                                                                    <i className="ti ti-plus me-2" /> New Task
+                                                                </a>
+                                                            </div>
                                                         </div>
-
                                                     </div>
-                                                    <div className="pt-2">
-                                                        <a
-                                                            href="#"
-                                                            className="btn btn-white border border-dashed d-flex align-items-center justify-content-center"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#add_task"
-                                                        >
-                                                            <i className="ti ti-plus me-2" /> New Task
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                            </div>
+                                                ))
+                                            ) : (
+                                                <p>No tasks assigned.</p>
+                                            )}
                                         </div>
+
 
                                     </div>
                                     <div className="tab-pane fade" id="pills-contact" role="tabpanel">
