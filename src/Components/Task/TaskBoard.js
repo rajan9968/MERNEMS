@@ -1,4 +1,5 @@
 import React from 'react'
+import Navbar from '../ClientSide/Navbar'
 
 export default function TaskBoard() {
     return (
