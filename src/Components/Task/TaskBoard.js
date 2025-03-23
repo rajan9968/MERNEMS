@@ -9,7 +9,7 @@ export default function TaskBoard() {
         try {
 
             const response = await selectTask();
-            selectTask(response);
+            setTasks(response);
 
         } catch (error) {
             console.log(error);
